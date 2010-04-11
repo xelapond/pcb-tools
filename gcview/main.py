@@ -5,24 +5,13 @@ import re
 import pyglet
 from pyglet.gl import *
 
+import parse
+
 #Zoom level
 gzl = 1
 
 LERP_COLOR = (1, 1, 1, 1)
 RAPID_POS_COLOR = (1, 0, 0, 0)
-
-#Regex for finding a G-Code comment
-fc = re.compile('\(.*\)')
-
-#Return a list of all the comments(as strings)
-fci = lambda t: fc.findall(t)
-
-def remove_comments(t):
-    comments = fci(t)
-    for c in comments:
-        t = ''.join(t.split(c))
-
-    return t
 
 #I Think this is depreciated, but maybe not
 #We'll see
@@ -126,22 +115,6 @@ def args2dict(args):
     '''
     return dict((exp[:1], float(exp[1:])) for exp in args)
 
-def parse_line(line):
-    #TODO: Implement multiple commands per line
-    #Do this in one of two ways
-    #   Hackish: Split by G, use list comprehension and add the G back, then recurse
-    #   Not So Hackish: Write a function to split based on a regex
-    #/TODO
-    exp = line.split(' ')
-    try:
-        exp.remove('')
-    except:
-        if '-v' in sys.argv:
-            print 'THERE IS NO \'\' TO REMOVE'
-    pred = exp[0]
-    args = args2dict(exp[1:])
-    return pred, args
-
 def interpret_file(lines, fdict):
     '''
     This function acts like the main loop.  It has side effects.  Unfortunately this program sorta lends itself to those.  Or it might just be that i'm not a real programmer.  Likely the latter.
@@ -150,7 +123,7 @@ def interpret_file(lines, fdict):
     args = {'X':0, 'Y':0, 'Z':0, 'SD' : statedict}
     for l in lines:
         #The 'e' represents the args and predicate from the expression
-        epred, eargs = parse_line(l)
+        epred, eargs = parse.line(l)
         args['OX'], args['OY'], args['OZ'], args['OC'] = args['X'], args['Y'], args['Z'], [epred, eargs]
         args = add_dict(args, eargs)
         if not statedict['absolute']:
@@ -205,7 +178,7 @@ if __name__ == '__main__':
     file = open(sys.argv[1])
     inp = file.read()
 
-    nc = filter(lambda x: x != '', remove_comments(inp).split('\n'))
+    nc = filter(lambda x: x != '', parse.remove_comments(inp).split('\n'))
     
     #Generate a display list
     dlist = start_display_list()
