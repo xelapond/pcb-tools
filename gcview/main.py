@@ -142,12 +142,12 @@ def parse_line(line):
     args = args2dict(exp[1:])
     return pred, args
 
-def parse_file(lines):
+def parse_file(lines, fdict):
     '''
     This function acts like the main loop.  It has side effects.  Unfortunately this program sorta lends itself to those.  Or it might just be that i'm not a real programmer.  Likely the latter.
     '''
-    dlist = start_display_list()
-    glBegin(GL_LINE_STRIP)
+    #dlist = start_display_list()
+    #glBegin(GL_LINE_STRIP)
     statedict = {'absolute' : True, 'inches' : True}
     args = {'X':0, 'Y':0, 'Z':0, 'SD' : statedict}
     for l in lines:
@@ -167,10 +167,10 @@ def parse_file(lines):
                 print epred
             
            
-    #return statedict
+    return statedict
     #glEnd()
-    glEndList()
-    return dlist, statedict
+    #glEndList()
+    #return dlist, statedict
 
 def on_mouse_drag(x, y, dx, dy, buttons, mods):
     global gzl
@@ -211,7 +211,13 @@ if __name__ == '__main__':
     inp = file.read()
 
     nc = filter(lambda x: x != '', remove_comments(inp).split('\n'))
-    dlist, statedict = parse_file(nc)
+    
+    #Generate a display list
+    dlist = start_display_list()
+    glBegin(GL_LINE_STRIP)
+    statedict = parse_file(nc, fdict)
+    glEnd()
+    glEndList()
 
     print 'Coordinates: ' + {True:'Absolute', False:'Incremental'}[statedict['absolute']]
     print 'Units: ' + {True:'Imperial', False:'Metric'}[statedict['inches']]
