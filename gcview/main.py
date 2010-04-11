@@ -7,30 +7,19 @@ from pyglet.gl import *
 
 import parse
 import draw
+import state
 
 #Zoom level
 gzl = 1
-
-def set_imperial(args):
-    args['SD']['inches'] = True
-
-def set_metric(args):
-    args['SD']['inches'] = False
-
-def set_absolute(args):
-    args['SD']['absolute'] = True
-
-def set_incremental(args):
-    args['SD']['absolute'] = False
 
 #Maps G-Codes to python functions
 fdict = {
    'G00' : draw.rapid,
    'G01' : draw.lerp,
-   'G20' : set_imperial,
-   'G21' : set_metric,
-   'G90' : set_absolute,
-   'G91' : set_incremental
+   'G20' : state.set_imperial,
+   'G21' : state.set_metric,
+   'G90' : state.set_absolute,
+   'G91' : state.set_incremental
 }
 
 def add_dict(d1, d2):
