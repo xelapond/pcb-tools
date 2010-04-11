@@ -11,18 +11,6 @@ import draw
 #Zoom level
 gzl = 1
 
-LERP_COLOR = (1, 1, 1, 1)
-RAPID_POS_COLOR = (1, 0, 0, 0)
-
-#I Think this is depreciated, but maybe not
-#We'll see
-cdict = {
-    .5  : (1, 0, 0), 
-    .02 : (0, 0, 0),
-
-     'EXCEPTION' : (1, 1, 1)
-}
-
 def set_imperial(args):
     args['SD']['inches'] = True
 
