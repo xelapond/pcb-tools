@@ -8,6 +8,7 @@ from pyglet.gl import *
 import parse
 import draw
 import state
+import utils
 
 #Zoom level
 gzl = 1
@@ -21,10 +22,6 @@ fdict = {
    'G90' : state.set_absolute,
    'G91' : state.set_incremental
 }
-
-def add_dict(d1, d2):
-    #TODO: Take more then one dict(In one line)
-    return dict(d1.items() + d2.items())
 
 def start_display_list():
     dlist = glGenLists(1)
@@ -42,7 +39,7 @@ def interpret_file(lines, fdict):
         #The 'e' represents the args and predicate from the expression
         epred, eargs = parse.line(l)
         args['OX'], args['OY'], args['OZ'], args['OC'] = args['X'], args['Y'], args['Z'], [epred, eargs]
-        args = add_dict(args, eargs)
+        args = utils.add_dict(args, eargs)
         if not statedict['absolute']:
             #If incremental
             for x in ['X', 'Y', 'Z']:
