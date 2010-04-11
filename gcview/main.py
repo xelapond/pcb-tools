@@ -146,8 +146,6 @@ def interpret_file(lines, fdict):
     '''
     This function acts like the main loop.  It has side effects.  Unfortunately this program sorta lends itself to those.  Or it might just be that i'm not a real programmer.  Likely the latter.
     '''
-    #dlist = start_display_list()
-    #glBegin(GL_LINE_STRIP)
     statedict = {'absolute' : True, 'inches' : True}
     args = {'X':0, 'Y':0, 'Z':0, 'SD' : statedict}
     for l in lines:
@@ -158,7 +156,7 @@ def interpret_file(lines, fdict):
         if not statedict['absolute']:
             #If incremental
             for x in ['X', 'Y', 'Z']:
-                args[c] = args['O' + c] + args[c]
+                args[c] += args['O' + c]
         if epred in fdict.keys():
             fdict[epred](args)
         else:
@@ -168,9 +166,6 @@ def interpret_file(lines, fdict):
             
            
     return statedict
-    #glEnd()
-    #glEndList()
-    #return dlist, statedict
 
 def on_mouse_drag(x, y, dx, dy, buttons, mods):
     global gzl
