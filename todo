@@ -1,6 +1,6 @@
 #+TITLE: PCBRouter Todo
 
-* GView
+* GCView
 ** UI
 *** TODO Don't draw from 0, 0 to the first point
     This happens because the first call is to move the quill, which sets x and y to zero because they init to that
