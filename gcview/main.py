@@ -9,6 +9,7 @@ import parse
 import draw
 import state
 import utils
+import glist
 
 #Zoom level
 gzl = 1
@@ -22,12 +23,6 @@ fdict = {
    'G90' : state.set_absolute,
    'G91' : state.set_incremental
 }
-
-def start_display_list():
-    dlist = glGenLists(1)
-    glNewList(dlist, GL_COMPILE)
-    
-    return dlist
 
 def interpret_file(lines, fdict):
     '''
@@ -95,7 +90,7 @@ if __name__ == '__main__':
     nc = filter(lambda x: x != '', parse.remove_comments(inp).split('\n'))
     
     #Generate a display list
-    dlist = start_display_list()
+    dlist = glist.start_display_list()
     glBegin(GL_LINE_STRIP)
     statedict = interpret_file(nc, fdict)
     glEnd()
