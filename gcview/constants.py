@@ -1,0 +1,2 @@
+LERP_COLOR = (1, 1, 1, 1)
+RAPID_POS_COLOR = (1, 0, 0, 0)
