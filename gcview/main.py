@@ -5,16 +5,6 @@ import re
 import pyglet
 from pyglet.gl import *
 
-
-'''
-Unfortunately the design of NC Code lends itself to a state machine, 
-so that's how this program works:/
-'''
-
-#Global states:(
-absolute = True
-inches = True
-
 #Zoom level
 gzl = 1
 
@@ -96,20 +86,16 @@ def draw_lerp(args):
     return draw_vertex(args)
 
 def set_imperial(args):
-    global inches
-    inches = True
+    args['SD']['inches'] = True
 
 def set_metric(args):
-    global inches
-    inches = False
+    args['SD']['inches'] = False
 
 def set_absolute(args):
-    global absolute
-    absolute = True
+    args['SD']['absolute'] = True
 
 def set_incremental(args):
-    global absolute
-    absolute = False
+    args['SD']['absolute'] = False
 
 #Maps G-Codes to python functions
 fdict = {
@@ -157,15 +143,19 @@ def parse_line(line):
     return pred, args
 
 def parse_file(lines):
+    '''
+    This function acts like the main loop.  It has side effects.  Unfortunately this program sorta lends itself to those.  Or it might just be that i'm not a real programmer.  Likely the latter.
+    '''
     dlist = start_display_list()
     glBegin(GL_LINE_STRIP)
-    args = {'X':0, 'Y':0, 'Z':0}
+    statedict = {'absolute' : True, 'inches' : True}
+    args = {'X':0, 'Y':0, 'Z':0, 'SD' : statedict}
     for l in lines:
         #The 'e' represents the args and predicate from the expression
         epred, eargs = parse_line(l)
         args['OX'], args['OY'], args['OZ'], args['OC'] = args['X'], args['Y'], args['Z'], [epred, eargs]
         args = add_dict(args, eargs)
-        if not absolute:
+        if not statedict['absolute']:
             #If incremental
             for x in ['X', 'Y', 'Z']:
                 args[c] = args['O' + c] + args[c]
@@ -176,10 +166,11 @@ def parse_file(lines):
             if '-v' in sys.argv:
                 print epred
             
-            
-    glEnd()
+           
+    #return statedict
+    #glEnd()
     glEndList()
-    return dlist
+    return dlist, statedict
 
 def on_mouse_drag(x, y, dx, dy, buttons, mods):
     global gzl
@@ -220,10 +211,10 @@ if __name__ == '__main__':
     inp = file.read()
 
     nc = filter(lambda x: x != '', remove_comments(inp).split('\n'))
-    dlist = parse_file(nc)
+    dlist, statedict = parse_file(nc)
 
-    print 'Coordinates: ' + {True:'Absolute', False:'Incremental'}[absolute]
-    print 'Units: ' + {True:'Imperial', False:'Metric'}[inches]
+    print 'Coordinates: ' + {True:'Absolute', False:'Incremental'}[statedict['absolute']]
+    print 'Units: ' + {True:'Imperial', False:'Metric'}[statedict['inches']]
 
     win = pyglet.window.Window(800, 800)
 
