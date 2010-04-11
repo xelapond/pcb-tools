@@ -142,7 +142,7 @@ def parse_line(line):
     args = args2dict(exp[1:])
     return pred, args
 
-def parse_file(lines, fdict):
+def interpret_file(lines, fdict):
     '''
     This function acts like the main loop.  It has side effects.  Unfortunately this program sorta lends itself to those.  Or it might just be that i'm not a real programmer.  Likely the latter.
     '''
@@ -215,7 +215,7 @@ if __name__ == '__main__':
     #Generate a display list
     dlist = start_display_list()
     glBegin(GL_LINE_STRIP)
-    statedict = parse_file(nc, fdict)
+    statedict = interpret_file(nc, fdict)
     glEnd()
     glEndList()
 
